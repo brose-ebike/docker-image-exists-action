@@ -2,63 +2,12 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { group } from 'console';
 import fetch from 'node-fetch';
+import { DockerImage } from './docker_image'
+import { WwwAuthenticateHeader } from './authenticate_header'
 
-
-
-class RegistryCredentials {
-    public registry: string
-    public username: string
-    public password: string
-
-    constructor(registry: string, username: string, password: string) {
-        this.registry = registry
-        this.username = username
-        this.password = password
-    }
+async function authenticateOnRegistry(registry: string, header: WwwAuthenticateHeader, credentials: RegistryCredentials | null): Promise<string> {
+    
 }
-
-class WwwAuthenticateHeader {
-    public realm: string
-    public scope: string
-    public service: string
-
-    constructor(realm: string, scope: string, service: string) {
-        this.realm = realm
-        this.scope = scope
-        this.service = service
-    }
-
-    let groups = imageNameWithoutTag.match(pattern)
-
-    if (groups === null) {
-        throw Error("Given image pattern is not a valid docker image name")
-    } else if (groups.length === 1) {
-        name = `library/${groups[0]}`
-    } else if (groups.length === 2) {
-        name = `${groups[0]}/${groups[1]}`
-    } else if (groups.length === 3) {
-        registry = `${groups[0]}`
-        name = `${groups[1]}/${groups[2]}`
-    } else if (groups.length === 4) {
-        registry = `${groups[0]}`
-        name = `${groups[1]}/${groups[2]}/${groups[3]}`
-    } else if (groups.length > 5){
-        registry = `${groups[0]}`
-        name = `${groups[1]}/${groups[2]}/${groups[3]}/${groups[4]}`
-    } else {
-        throw Error(`Given image pattern (${imageNameWithoutTag}) is not a valid docker image name`)
-    }
-
-    return new DockerImage(registry, name, tag)
-    static parse(value: string): WwwAuthenticateHeader {
-        const realm = value.split('realm="')[1].split('"')[0]
-        const service = value.split('service="')[1].split('"')[0]
-        const scope = value.split('scope="')[1].split('"')[0]
-        return new WwwAuthenticateHeader(realm, scope, service)
-    }
-}
-
-
 
 async function existsOnDockerHub(image: DockerImage): Promise<boolean> {
     // Query with public docker hub api
@@ -80,8 +29,12 @@ async function existsOnRegistry(image: DockerImage, credentials: RegistryCredent
         headers: headers
     })
     if (response.status == 401 && accessToken === null) {
-        const authenticateHeader = WwwAuthenticateHeader.parse(response)
-        accessToken = self._authenticate_on_registry(registry, header_value)
+        const headerValue = response.headers.get("Www-Authenticate")
+        if (headerValue === null){
+            throw new Error("Www-Authenticate header does not exist")
+        }
+        const authenticateHeader = WwwAuthenticateHeader.parse(headerValue)
+        accessToken = await authenticateOnRegistry(image.registry as string, authenticateHeader, credentials)
         return existsOnRegistry(image, credentials, accessToken)
     } else if (response.status == 200) {
         return true
@@ -105,7 +58,7 @@ async function main() {
     const username = core.getInput('username');
     const password = core.getInput('password');
     // Parse image name and check registries
-    let image = parse(imageName)
+    let image = DockerImage.parse(imageName)
     if (image.registry !== null && registry !== null && image.registry !== registry) {
         throw Error("Registry mismatch, the registry in the image name has to match the registry input")
     }
