@@ -30,20 +30,18 @@ export class DockerImage {
 
         if (groups === null) {
             throw Error("Given image pattern is not a valid docker image name")
-        } else if (groups.length === 1) {
-            name = `library/${groups[0]}`
-        } else if (groups.length === 2) {
-            name = `${groups[0]}/${groups[1]}`
-        } else if (groups.length === 3) {
-            registry = groups[0]
-            name = `${groups[1]}/${groups[2]}`
-        } else if (groups.length === 4) {
-            registry = groups[0]
-            name = `${groups[1]}/${groups[2]}/${groups[3]}`
-        } else if (groups.length === 5){
-            registry = groups[0]
-            name = `${groups[1]}/${groups[2]}/${groups[3]}/${groups[4]}`
-        } else {
+        } else if (groups[1] != null) {
+            name = `library/${groups[1]}`
+        } else if (groups[2] != null) {
+            name = `${groups[2]}/${groups[3]}`
+        } else if (groups[4] != null) {
+            registry = groups[4]
+            name = `${groups[5]}/${groups[6]}`
+        } else if (groups[7] != null) {
+            registry = groups[7]
+            name = `${groups[8]}/${groups[9]}/${groups[10]}`
+        } 
+        else {
             throw Error(`Given image pattern (${imageNameWithoutTag}) is not a valid docker image name`)
         }
 
