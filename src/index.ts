@@ -2,22 +2,110 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import fetch from 'node-fetch';
 
-class DockerImage{
-    public registry: string | null = ""
-    public name: string = ""
-    public tag: string = ""
+class DockerImage {
+    public registry: string | null
+    public name: string
+    public tag: string
 
 
-    constructor(registry: string | null, name: string, tag: string){
+    constructor(registry: string | null, name: string, tag: string) {
         this.registry = registry
         this.name = name
         this.tag = tag
     }
 }
 
-function parse(imageName: string): DockerImage{
-    // TODO parse parts of the image
+class RegistryCredentials {
+    public registry: string
+    public username: string
+    public password: string
+
+    constructor(registry: string, username: string, password: string) {
+        this.registry = registry
+        this.username = username
+        this.password = password
+    }
+}
+
+function parse(imageName: string): DockerImage {
+
+    const pattern = /(?:([\-\_\.\w]+)$)|(?:([\-\_\.\w]+)\/([\-\_\.\w]+)$)|(?:([\-\.A-z0-9]+)\/([\-\_\.\w]+)\/([\-\_\.\w]+)$)|(?:([\-\.A-z0-9]+)\/([\-\_\.\w]+)\/([\-\_\.\w]+)\/([\-\_\.\w]+)$)/mg;
+
+    let registry = null
+    let name = ""
+    let tag = "latest"
+
+    let imageNameWithoutTag = imageName
+    if (imageName.includes(":")) {
+        let parts = imageName.split(":", 2)
+        imageNameWithoutTag = parts[0]
+        tag = parts[1]
+    }
+
+    let groups = imageNameWithoutTag.match(pattern)
+
+    if (groups === null) {
+        throw Error("Given image pattern is not a valid docker image name")
+    } else if (groups.length === 1) {
+        name = `library/${groups[0]}`
+    } else if (groups.length === 2) {
+        name = `${groups[1]}/${groups[2]}`
+    } else if (groups.length === 4) {
+        name = `${groups[3]}/${groups[4]}/$groups[5]{groups[5]}`
+    } else if (groups.length > 5){
+            name = `${groups[6]}/${groups[7]}/${groups[8]}/${groups[9]}`
+    } else {
+        throw Error(`Given image pattern (${imageNameWithoutTag}) is not a valid docker image name`)
+    }
+
+
+
+
+
+
+
+
     return new DockerImage(null, imageName, "latest")
+}
+
+async function authenticateOnRegistry(registry: string, credentials: RegistryCredentials | null): string {
+    // TODO authenticate on registry
+    return "token-token-token"
+}
+
+async function existsOnDockerHub(image: DockerImage): boolean {
+    // Query with public docker hub api
+    return false
+}
+
+async function existsOnRegistry(image: DockerImage, accessToken: str | null): boolean {
+    const request_url = `https://${image.registry}/v2/${image.name}/manifests/${image.tag}`
+
+    // depending on the registry it my helps adding the write accept header :)
+    // https://github.com/goharbor/harbor/issues/16075
+    headers = {
+        "Accept": "application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json",
+    }
+    if (access_token !== null){
+        headers["Authorization"] = `Bearer ${access_token}`
+    }
+    const response = await fe tch("")
+    // TODO parse response correctly
+    return false
+}
+
+
+async function exists(image: DockerImage, credentials: RegistryCredential | null): boolean {
+    if (image.registry === null){
+        return await existsOnDockerHub(image, crecdentials)
+    } 
+
+    let accessToken = null
+    if (credentials !== null){
+        accessToken = await authenticateOnRegistry(image.registry, credentials)
+    }
+    
+    return existsOnRegistry(image, accessToken)
 }
 
 async function main() {
@@ -31,7 +119,7 @@ async function main() {
     if (image.registry !== null && registry !== null && image.registry !== registry){
         throw Error("Registry mismatch, the registry in the image name has to match the registry input")
     }
-    // Check if image exists
+    // Check if image exist s
     let exists = false // TODO check if the image exists
     // Return output
     core.setOutput('exists', exists)
@@ -53,46 +141,6 @@ main().catch((error) => {
 // service = authenticate.split('service="')[1].split('"')[0]
 // scope = authenticate.split('scope="')[1].split('"')[0]
 // return WwwAuthenticateHeader(realm, scope, service)
-
-// classes
-// class DockerImageAvailableCheck(ICheck):
-//     def __init__(
-//         self,
-//         application_name,
-//         source_version,
-//         target_version,
-//         config: LennyBotCheckConfig,
-//         container_config: LennyBotConfigContainerConfig,
-//     ) -> None:
-//         self._log = logging.getLogger(self.__class__.__name__)
-//         self._application_name = application_name
-//         self._source_version = source_version
-//         self._target_version = target_version
-//         self._image_pattern = config.image_pattern
-//         self._container_config = container_config
-
-//     @property
-//     def application(self) -> str:
-//         return self._application_name
-
-//     @property
-//     def source_version(self) -> str:
-//         return self._source_version
-
-//     @property
-//     def target_version(self) -> str:
-//         return self._target_version
-
-//     def check(self) -> bool:
-//         """
-//         Checks if an image exists in the remote registry from _image_pattern.
-//         """
-//         image = self._parse_image()
-
-//         if image._registry is None:
-//             return self._exists_on_docker_hub(image)
-//         return self._exists_on_registry(image)
-
 
 
 // parse_image
