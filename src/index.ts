@@ -15,8 +15,6 @@ class DockerImage{
     }
 }
 
-
-
 function parse(imageName: string): DockerImage{
     // TODO parse parts of the image
     return new DockerImage(null, imageName, "latest")
