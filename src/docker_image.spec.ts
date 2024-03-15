@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import { parse, DockerImage } from './index';
+import { DockerImage } from './docker_image';
 import exp from 'constants';
 
 describe('GitHub job state', () => {
@@ -14,20 +14,20 @@ describe('GitHub job state', () => {
   it('should convert success to 0', () => {
     const input = "quay.io/argoproj/argocd"
   
-    const result = parse(input);
-    expect(DockerImage.registry).to.equal("quay.io")
-    expect(DockerImage.name).to.equal("argoproj/argocd")
-    expect(DockerImage.tag).to.equal("latest")    
+    const result = DockerImage.parse(input);
+    expect(result.registry).to.equal("quay.io")
+    expect(result.name).to.equal("argoproj/argocd")
+    expect(result.tag).to.equal("latest")    
   });
   
   // quay.io/argo/proj/argo/argocd
   it('should convert success to 0', () => {
     const input = "quay.io/argo/proj/argo/argocd"
 
-    const result = parse(input);
-    expect(DockerImage.registry).to.equal("quay.io")
-    expect(DockerImage.name).to.equal("argo/proj/argo/argocd")
-    expect(DockerImage.tag).to.equal("latest")    
+    const result = DockerImage.parse(input);
+    expect(result.registry).to.equal("quay.io")
+    expect(result.name).to.equal("argo/proj/argo/argocd")
+    expect(result.tag).to.equal("latest")    
   });
 
 });
