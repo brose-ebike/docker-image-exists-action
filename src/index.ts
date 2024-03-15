@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { group } from 'console';
 import fetch from 'node-fetch';
 
 class DockerImage {
@@ -49,16 +50,21 @@ function parse(imageName: string): DockerImage {
     } else if (groups.length === 1) {
         name = `library/${groups[0]}`
     } else if (groups.length === 2) {
+        name = `${groups[0]}/${groups[1]}`
+    } else if (groups.length === 3) {
+        registry = `${groups[0]}`
         name = `${groups[1]}/${groups[2]}`
     } else if (groups.length === 4) {
-        name = `${groups[3]}/${groups[4]}/$groups[5]{groups[5]}`
+        registry = `${groups[0]}`
+        name = `${groups[1]}/${groups[2]}/${groups[3]}`
     } else if (groups.length > 5){
-            name = `${groups[6]}/${groups[7]}/${groups[8]}/${groups[9]}`
+        registry = `${groups[0]}`
+        name = `${groups[1]}/${groups[2]}/${groups[3]}/${groups[4]}`
     } else {
         throw Error(`Given image pattern (${imageNameWithoutTag}) is not a valid docker image name`)
     }
 
-    return new DockerImage(null, imageName, "latest")
+    return new DockerImage(registry, name, tag)
 }
 
 async function authenticateOnRegistry(registry: string, credentials: RegistryCredentials | null): Promise<string> {
@@ -135,42 +141,6 @@ main().catch((error) => {
 // scope = authenticate.split('scope="')[1].split('"')[0]
 // return WwwAuthenticateHeader(realm, scope, service)
 
-
-// parse_image
-//_____________________________________
-// def _parse_image(self):
-// """
-// Parse function to return a docker image is correct by syntax
-// """
-// if ":" not in self._image_pattern:
-//     raise Exception("Image pattern does not contain a tag seperator")
-
-// image_name = self._image_pattern.split(":")[0]
-// image_tag = self._image_pattern.split(":")[1].replace("{{version}}", self.target_version)
-
-// match = re.match(PATTERN, image_name)
-// if match is None:
-//     raise Exception(f"Given image pattern is not a valid docker image name {image_name}")
-// logging.debug("regex matched following pattern: " + match.group(0))
-// if match.group(1) is not None:
-//     logging.debug("regex matched following pattern: " + match.group(1))
-//     return DockerImage(None, "library/" + match.group(1), image_tag)
-// if match.group(2) is not None:
-//     logging.debug("regex matched following pattern: " + match.group(2) + "/" + match.group(3) + " " + image_tag)
-//     return DockerImage(None, match.group(2) + "/" + match.group(3), image_tag)
-// if match.group(4) is not None:
-//     logging.debug(
-//         "regex matched following pattern: "
-//         + match.group(4)
-//         + "/"
-//         + match.group(5)
-//         + "/"
-//         + match.group(6)
-//         + " "
-//         + image_tag
-//     )
-//     return DockerImage(match.group(4), match.group(5) + "/" + match.group(6), image_tag)
-// return DockerImage(match.group(7), match.group(8) + "/" + match.group(9) + "/" + match.group(10), image_tag)
 
 // authenticate_at_registry
 //___________________________
