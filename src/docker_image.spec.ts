@@ -5,12 +5,12 @@ import exp from 'constants';
 
 describe('GitHub job state', () => {
 
-// nginx
-// grafana/grafana
-// quay.io/argoproj/argocd
-// qua_y.io/argoproj/argocd
-// quay.io/argo/proj/argocd
-// quay.io/argo/proj/argo/argocd
+  // nginx
+  // grafana/grafana
+  // quay.io/argoproj/argocd
+  // qua_y.io/argoproj/argocd
+  // quay.io/argo/proj/argocd
+  // quay.io/argo/proj/argo/argocd
 
   it('should convert success to 0', () => {
     const input = "quay.io/argoproj/argocd"
