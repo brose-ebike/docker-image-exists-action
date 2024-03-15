@@ -90,7 +90,7 @@ async function existsOnRegistry(image: DockerImage, accessToken: str | null): bo
 
 async function exists(image: DockerImage, credentials: RegistryCredential | null): boolean {
     if (image.registry === null){
-        return await existsOnDockerHub(image, crecdentials)
+        return await existsOnDockerHub(image, credentials)
     } 
 
     let accessToken = null
