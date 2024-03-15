@@ -82,7 +82,7 @@ async function existsOnRegistry(image: DockerImage, accessToken: str | null): bo
     if (access_token !== null){
         headers["Authorization"] = `Bearer ${access_token}`
     }
-    const response = await fe tch("")
+    const response = await fetch("")
     // TODO parse response correctly
     return false
 }
