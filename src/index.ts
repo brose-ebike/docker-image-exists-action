@@ -3,18 +3,7 @@ import * as github from '@actions/github';
 import { group } from 'console';
 import fetch from 'node-fetch';
 
-class DockerImage {
-    public registry: string | null
-    public name: string
-    public tag: string
 
-
-    constructor(registry: string | null, name: string, tag: string) {
-        this.registry = registry
-        this.name = name
-        this.tag = tag
-    }
-}
 
 class RegistryCredentials {
     public registry: string
@@ -28,19 +17,15 @@ class RegistryCredentials {
     }
 }
 
-function parse(imageName: string): DockerImage {
+class WwwAuthenticateHeader {
+    public realm: string
+    public scope: string
+    public service: string
 
-    const pattern = /(?:([\-\_\.\w]+)$)|(?:([\-\_\.\w]+)\/([\-\_\.\w]+)$)|(?:([\-\.A-z0-9]+)\/([\-\_\.\w]+)\/([\-\_\.\w]+)$)|(?:([\-\.A-z0-9]+)\/([\-\_\.\w]+)\/([\-\_\.\w]+)\/([\-\_\.\w]+)$)/mg;
-
-    let registry = null
-    let name = ""
-    let tag = "latest"
-
-    let imageNameWithoutTag = imageName
-    if (imageName.includes(":")) {
-        let parts = imageName.split(":", 2)
-        imageNameWithoutTag = parts[0]
-        tag = parts[1]
+    constructor(realm: string, scope: string, service: string) {
+        this.realm = realm
+        this.scope = scope
+        this.service = service
     }
 
     let groups = imageNameWithoutTag.match(pattern)
@@ -65,19 +50,22 @@ function parse(imageName: string): DockerImage {
     }
 
     return new DockerImage(registry, name, tag)
+    static parse(value: string): WwwAuthenticateHeader {
+        const realm = value.split('realm="')[1].split('"')[0]
+        const service = value.split('service="')[1].split('"')[0]
+        const scope = value.split('scope="')[1].split('"')[0]
+        return new WwwAuthenticateHeader(realm, scope, service)
+    }
 }
 
-async function authenticateOnRegistry(registry: string, credentials: RegistryCredentials | null): Promise<string> {
-    // TODO authenticate on registry
-    return "token-token-token"
-}
+
 
 async function existsOnDockerHub(image: DockerImage): Promise<boolean> {
     // Query with public docker hub api
     return false
 }
 
-async function existsOnRegistry(image: DockerImage, accessToken: string | null): Promise<boolean> {
+async function existsOnRegistry(image: DockerImage, credentials: RegistryCredentials | null, accessToken: string | null = null): Promise<boolean> {
     const requestUrl = `https://${image.registry}/v2/${image.name}/manifests/${image.tag}`
 
     // depending on the registry it my helps adding the write accept header :)
@@ -85,26 +73,29 @@ async function existsOnRegistry(image: DockerImage, accessToken: string | null):
     let headers: any = {
         "Accept": "application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json",
     }
-    if (accessToken !== null){
+    if (accessToken !== null) {
         headers["Authorization"] = `Bearer ${accessToken}`
     }
-    const response = await fetch(requestUrl)
-    // TODO parse response correctly
-    return false
+    const response = await fetch(requestUrl, {
+        headers: headers
+    })
+    if (response.status == 401 && accessToken === null) {
+        const authenticateHeader = WwwAuthenticateHeader.parse(response)
+        accessToken = self._authenticate_on_registry(registry, header_value)
+        return existsOnRegistry(image, credentials, accessToken)
+    } else if (response.status == 200) {
+        return true
+    } else if (response.status == 404) {
+        return false
+    }
+    throw Error(`Unexpected status: ${response.status} for url ${requestUrl}`)
 }
 
-
 async function exists(image: DockerImage, credentials: RegistryCredentials | null): Promise<boolean> {
-    if (image.registry === null){
+    if (image.registry === null) {
         return await existsOnDockerHub(image)
-    } 
-
-    let accessToken = null
-    if (credentials !== null){
-        accessToken = await authenticateOnRegistry(image.registry, credentials)
     }
-    
-    return existsOnRegistry(image, accessToken)
+    return existsOnRegistry(image, credentials)
 }
 
 async function main() {
@@ -115,7 +106,7 @@ async function main() {
     const password = core.getInput('password');
     // Parse image name and check registries
     let image = parse(imageName)
-    if (image.registry !== null && registry !== null && image.registry !== registry){
+    if (image.registry !== null && registry !== null && image.registry !== registry) {
         throw Error("Registry mismatch, the registry in the image name has to match the registry input")
     }
     // Check if image exist s
