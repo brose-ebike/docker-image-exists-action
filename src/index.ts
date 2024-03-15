@@ -7,6 +7,7 @@ import { WwwAuthenticateHeader } from './authenticate_header'
 
 async function authenticateOnRegistry(registry: string, header: WwwAuthenticateHeader, credentials: RegistryCredentials | null): Promise<string> {
     
+    return ""
 }
 
 async function existsOnDockerHub(image: DockerImage): Promise<boolean> {
@@ -67,6 +68,7 @@ async function main() {
     // Return output
     core.setOutput('exists', exists)
 }
+
 main().catch((error) => {
     core.setFailed(error.message);
 })
