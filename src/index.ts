@@ -61,36 +61,36 @@ function parse(imageName: string): DockerImage {
     return new DockerImage(null, imageName, "latest")
 }
 
-async function authenticateOnRegistry(registry: string, credentials: RegistryCredentials | null): string {
+async function authenticateOnRegistry(registry: string, credentials: RegistryCredentials | null): Promise<string> {
     // TODO authenticate on registry
     return "token-token-token"
 }
 
-async function existsOnDockerHub(image: DockerImage): boolean {
+async function existsOnDockerHub(image: DockerImage): Promise<boolean> {
     // Query with public docker hub api
     return false
 }
 
-async function existsOnRegistry(image: DockerImage, accessToken: str | null): boolean {
-    const request_url = `https://${image.registry}/v2/${image.name}/manifests/${image.tag}`
+async function existsOnRegistry(image: DockerImage, accessToken: string | null): Promise<boolean> {
+    const requestUrl = `https://${image.registry}/v2/${image.name}/manifests/${image.tag}`
 
     // depending on the registry it my helps adding the write accept header :)
     // https://github.com/goharbor/harbor/issues/16075
-    headers = {
+    let headers: any = {
         "Accept": "application/vnd.oci.image.index.v1+json, application/vnd.docker.distribution.manifest.list.v2+json",
     }
-    if (access_token !== null){
-        headers["Authorization"] = `Bearer ${access_token}`
+    if (accessToken !== null){
+        headers["Authorization"] = `Bearer ${accessToken}`
     }
-    const response = await fetch("")
+    const response = await fetch(requestUrl)
     // TODO parse response correctly
     return false
 }
 
 
-async function exists(image: DockerImage, credentials: RegistryCredential | null): boolean {
+async function exists(image: DockerImage, credentials: RegistryCredentials | null): Promise<boolean> {
     if (image.registry === null){
-        return await existsOnDockerHub(image, credentials)
+        return await existsOnDockerHub(image)
     } 
 
     let accessToken = null
