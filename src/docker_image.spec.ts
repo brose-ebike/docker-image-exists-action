@@ -9,15 +9,24 @@ describe('GitHub job state', () => {
   // grafana/grafana
   // quay.io/argoproj/argocd
   // qua_y.io/argoproj/argocd
-  // quay.io/argo/proj/argocd
-  // quay.io/argo/proj/argo/argocd
 
+  // quay.io/argo/proj/argocd
   it('should convert success to 0', () => {
     const input = "quay.io/argoproj/argocd"
-
+  
     const result = parse(input);
     expect(DockerImage.registry).to.equal("quay.io")
     expect(DockerImage.name).to.equal("argoproj/argocd")
+    expect(DockerImage.tag).to.equal("latest")    
+  });
+  
+  // quay.io/argo/proj/argo/argocd
+  it('should convert success to 0', () => {
+    const input = "quay.io/argo/proj/argo/argocd"
+
+    const result = parse(input);
+    expect(DockerImage.registry).to.equal("quay.io")
+    expect(DockerImage.name).to.equal("argo/proj/argo/argocd")
     expect(DockerImage.tag).to.equal("latest")    
   });
 
