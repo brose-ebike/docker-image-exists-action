@@ -1,0 +1,24 @@
+name: 'Docker Image Exists Action'
+description: 'Create a release documentation from the repository PRs'
+branding:
+  icon: 'file-text'  
+  color: 'red'
+inputs:
+  image:
+    required: true
+    description: "The image name with or without the registry name. If the registry name is given, it has to match the registry defined in the registry input."
+  registry:
+    required: false
+    description: "The domain name of the registry."
+  username:
+    required: false
+    description: "The username for authentication at the registry."
+  password:
+    required: false
+    description: "The password for authentication at the registry."
+outputs:
+  exists:
+    description: "Returns if the image exists or not"
+runs:
+  using: 'node16'
+  main: 'out/main/index.js'

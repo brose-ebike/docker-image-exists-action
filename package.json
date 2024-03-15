@@ -1,0 +1,39 @@
+{
+    "name": "docker-image-exists-action",
+    "version": "0.0.1",
+    "description": "A github action which checks if a docker image exists on a given registry",
+    "main": "out/index.js",
+    "scripts": {
+        "build": "npx ncc build src/index.ts -m -o out/main/",
+        "watch": "npx ncc build src/index.ts -m -w -o out/main/",
+        "test": "npx ts-mocha -p tsconfig.json src/**/*.spec.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/brose-ebike/pushgateway-action"
+    },
+    "keywords": [],
+    "author": "Brose Fahrzeugteile SE & Co. KG, Bamberg",
+    "license": "Apache 2.0",
+    "bugs": {
+        "url": "https://github.com/brose-ebike/pushgateway-action/issues"
+    },
+    "homepage": "https://github.com/brose-ebike/pushgateway-action#readme",
+    "dependencies": {
+        "@actions/core": "^1.10.1",
+        "@actions/exec": "^1.1.1",
+        "@actions/github": "^6.0.0",
+        "node-fetch": "^3.3.2"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.11",
+        "@types/expect": "^24.3.0",
+        "@types/mocha": "^10.0.6",
+        "@types/node": "^20.11.25",
+        "@vercel/ncc": "^0.38.1",
+        "chai": "^4.3.10",
+        "mocha": "^10.3.0",
+        "ts-mocha": "^10.0.0",
+        "typescript": "^5.4.2"
+    }
+}
