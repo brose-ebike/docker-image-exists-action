@@ -58,13 +58,6 @@ function parse(imageName: string): DockerImage {
         throw Error(`Given image pattern (${imageNameWithoutTag}) is not a valid docker image name`)
     }
 
-
-
-
-
-
-
-
     return new DockerImage(null, imageName, "latest")
 }
 
