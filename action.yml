@@ -2,7 +2,7 @@ name: 'Docker Image Exists Action'
 description: 'Create a release documentation from the repository PRs'
 branding:
   icon: 'compass'  
-  color: 'red'
+  color: 'blue'
 inputs:
   image:
     required: true
