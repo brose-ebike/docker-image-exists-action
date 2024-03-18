@@ -14,4 +14,6 @@ jobs:
           image: "nginx"
       - name: "Evalulate result"
         run: |
-          echo "${{ steps.nginx.outputs.exists }}"
+          if [ "${{ steps.nginx.outputs.exists }}" != "true" ]; then
+            return 1
+          fi
