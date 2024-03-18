@@ -7,7 +7,7 @@ jobs:
     name: "CI"
     runs-on: ubuntu-latest
     steps:
-      - uses: github.com/brose-ebike/docker-image-exists-action@main
+      - uses: brose-ebike/docker-image-exists-action@main
         id: "nginx"
         name: "Check if nginx exists"
         with:
