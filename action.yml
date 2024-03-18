@@ -20,5 +20,5 @@ outputs:
   exists:
     description: "Returns if the image exists or not"
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'out/main/index.js'
