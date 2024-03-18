@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   test_nginx:
-    name: "CI"
+    name: "Check if latest nginx image exists"
     runs-on: ubuntu-latest
     steps:
       - uses: brose-ebike/docker-image-exists-action@main
