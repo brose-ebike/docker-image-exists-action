@@ -2,8 +2,8 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { group } from 'console';
 import fetch from 'node-fetch';
-import { DockerImage } from './docker_image'
-import { WwwAuthenticateHeader } from './authenticate_header'
+import { WwwAuthenticateHeader } from './authenticate_header';
+import { DockerImage } from './docker_image';
 import { RegistryService } from './registry_service';
 
 async function main() {
