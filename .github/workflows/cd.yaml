@@ -1,0 +1,85 @@
+name: Release
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get current date
+      id: params
+      run: |
+        echo "::set-output name=latest::$(git describe --tags `git rev-list --tags --max-count=1`)"
+        echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        echo "::set-output name=version::$(cat version.txt)"
+    - name: "Build"
+      run: |
+        npm ci
+        npm run build
+    - id: content
+      name: Create Release Content
+      uses: raynigon/release-documentation@main
+      with:
+        token: "${{ secrets.GITHUB_TOKEN }}"
+        latest: "${{ steps.params.outputs.latest }}"
+        template: |
+          # What's Changed
+          <!-- Features -->
+          {{#pull_requests.feature.length}}
+          ## 🚀 Features
+          {{#pull_requests.feature }}
+          * {{ title }} PR: #{{ number }}
+          {{/pull_requests.feature }}
+          {{/pull_requests.feature.length}}
+          <!-- Bug Fixes -->
+          {{#pull_requests.bug.length}}
+          ## 🐛 Bug Fixes
+          {{#pull_requests.bug}}
+          * {{ title }} PR: #{{ number }}
+          {{/pull_requests.bug}}
+          {{/pull_requests.bug.length}}
+          <!-- Documentation -->
+          {{#pull_requests.documentation.length}}
+          ## 📖 Documentation
+          {{#pull_requests.documentation}}
+          * {{ title }} PR: #{{ number }}
+          {{/pull_requests.documentation}}
+          {{/pull_requests.documentation.length}}
+          <!-- Housekeeping -->
+          {{#pull_requests.housekeeping.length}}
+          ## 🧹 Housekeeping
+          {{#pull_requests.housekeeping}}
+          * {{ title }} PR: #{{ number }}
+          {{/pull_requests.housekeeping}}
+          {{/pull_requests.housekeeping.length}}
+          <!-- Dependency updates -->
+          {{#pull_requests.dependencies.length}}
+          ## 📦 Dependency updates
+          {{#pull_requests.dependencies}}
+          * {{ title }} PR: #{{ number }}
+          {{/pull_requests.dependencies}}
+          {{/pull_requests.dependencies.length}}
+    - name: "Github Release"
+      uses: softprops/action-gh-release@91409e712cf565ce9eff10c87a8d1b11b81757ae #v1
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      with:
+        tag_name: "v${{ steps.params.outputs.version }}"
+        name: "v${{ steps.params.outputs.version }}"
+        files: out/*
+        body: ${{ steps.content.outputs.content }}
+    - name: Increment Version
+      run: |
+        python .github/scripts/increment_version.py
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        title: 'Release ${{ steps.params.outputs.version }}'
+        branch: release-${{ steps.params.outputs.version }}
+        commit-message: Release ${{ steps.params.outputs.version }} on ${{ steps.params.outputs.date }}
+        delete-branch: true
+        draft: false
+        labels: |
+          release
+        reviewers: raynigon
