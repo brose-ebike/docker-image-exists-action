@@ -1,3 +1,4 @@
+import fetch from "node-fetch"
 import { WwwAuthenticateHeader } from "./authenticate_header"
 import { DockerImage } from "./docker_image"
 import { RegistryCredentials } from "./registry_credentials"
