@@ -1,6 +1,6 @@
 {
     "name": "docker-image-exists-action",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "A github action which checks if a docker image exists on a given registry",
     "main": "out/index.js",
     "scripts": {
