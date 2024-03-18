@@ -1,7 +1,7 @@
 import { expect } from 'chai';
+import exp from 'constants';
 import 'mocha';
 import { DockerImage } from './docker_image';
-import exp from 'constants';
 
 describe('given different image lengths', () => {
 
