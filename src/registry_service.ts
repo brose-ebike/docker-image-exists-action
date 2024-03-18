@@ -1,5 +1,6 @@
 import { WwwAuthenticateHeader } from "./authenticate_header"
 import { DockerImage } from "./docker_image"
+import { RegistryCredentials } from "./registry_credentials"
 
 async function authenticateOnRegistry(header: WwwAuthenticateHeader, credentials: RegistryCredentials | null): Promise<string> {
     const params = {
@@ -50,9 +51,13 @@ async function authenticateOnRegistry(header: WwwAuthenticateHeader, credentials
 }
 
 async function existsOnDockerHub(image: DockerImage): Promise<boolean> {
-    const url = `https://hub.docker.com/v2/repositories/${image.name}/tags?page_size=10000`
+    
+    const url = `https://hub.docker.com/v2/repositories/${image.getDockerHubName()}/tags?page_size=10000`
+
     const response = await fetch(url)
-    if (response.status != 200) {
+    if (response.status === 404) {
+        return false
+    } else if (response.status != 200) {
         throw new Error(`Unexpected status: ${response.status} for url: ${url}`)
     }
     const body = (await response.json()) as any

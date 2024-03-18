@@ -1,4 +1,4 @@
-class RegistryCredentials {
+export class RegistryCredentials {
     public registry: string
     public username: string
     public password: string

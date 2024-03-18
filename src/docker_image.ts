@@ -1,4 +1,5 @@
 export class DockerImage {
+    
     public registry: string | null
     public name: string
     public tag: string
@@ -10,6 +11,12 @@ export class DockerImage {
         this.tag = tag
     }
 
+    getDockerHubName() {
+        if(!this.name.includes("/")){
+            return `library/${this.name}`
+        }
+        return this.name
+    }
 
     static parse(imageName: string): DockerImage {
 
@@ -29,7 +36,7 @@ export class DockerImage {
         let groups = imageNameWithoutTag.match(pattern)
 
         if (groups === null) {
-            throw Error("Given image pattern is not a valid docker image name")
+            throw Error(`Given image pattern (${imageNameWithoutTag}) is not a valid docker image name`)
         } else if (groups[1] != null) {
             name = `library/${groups[1]}`
         } else if (groups[2] != null) {
@@ -40,8 +47,7 @@ export class DockerImage {
         } else if (groups[7] != null) {
             registry = groups[7]
             name = `${groups[8]}/${groups[9]}/${groups[10]}`
-        } 
-        else {
+        } else {
             throw Error(`Given image pattern (${imageNameWithoutTag}) is not a valid docker image name`)
         }
 

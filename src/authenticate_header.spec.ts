@@ -3,25 +3,12 @@ import 'mocha';
 import { WwwAuthenticateHeader } from './authenticate_header';
 
 describe('given a valid authenticate header value', () => {
-
     it('should be parsed', () =>{
-      const input = "nginx"
+      const input = 'Bearer realm="https://ghcr.io/token",service="ghcr.io",scope="repository:runatlantis/atlantis:pull"'
     
       const result = WwwAuthenticateHeader.parse(input);
-      expect(result.realm).to.equal(null)
-      expect(result.scope).to.equal("library/nginx")
-      expect(result.service).to.equal("latest") 
-    })
-})
-
-describe('given an invalid authenticate header value', () => {
-
-    it('should not be parsed', () =>{
-      const input = "nginx"
-    
-      const result = WwwAuthenticateHeader.parse(input);
-      expect(result.realm).to.equal(null)
-      expect(result.scope).to.equal("library/nginx")
-      expect(result.service).to.equal("latest") 
+      expect(result.realm).to.equal("https://ghcr.io/token")
+      expect(result.scope).to.equal("repository:runatlantis/atlantis:pull")
+      expect(result.service).to.equal("ghcr.io") 
     })
 })

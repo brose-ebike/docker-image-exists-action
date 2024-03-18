@@ -1,10 +1,8 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import { group } from 'console';
-import fetch from 'node-fetch';
-import { WwwAuthenticateHeader } from './authenticate_header';
 import { DockerImage } from './docker_image';
 import { RegistryService } from './registry_service';
+import { RegistryCredentials } from './registry_credentials';
 
 async function main() {
     // Input
