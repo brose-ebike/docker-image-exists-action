@@ -3,18 +3,33 @@ import * as github from '@actions/github';
 import { DockerImage } from './docker_image';
 import { RegistryService } from './registry_service';
 import { RegistryCredentials } from './registry_credentials';
+import { use } from 'chai';
+
+
+function getInput(name: string): string | null {
+    const value = core.getInput(name)
+    if (value === null || value === "") {
+        return null
+    }
+    return value
+}
 
 async function main() {
     // Input
-    const imageName = core.getInput('image');
-    const registry = core.getInput('registry');
-    const username = core.getInput('username');
-    const password = core.getInput('password');
+    const imageName = getInput('image');
+    const registry = getInput('registry');
+    const username = getInput('username');
+    const password = getInput('password');
+
+    if(imageName === null){
+        throw new Error("The Input 'image' is mandatory!")
+    }
+
     // Business Logic Initialization
     const service = new RegistryService()
     // Parse image name and check registries
     let image = DockerImage.parse(imageName)
-    if (image.registry === null && registry !== null){
+    if (image.registry === null && registry !== null) {
         image.registry = registry
     }
     // Ensure the registry is handled correctly
@@ -23,7 +38,7 @@ async function main() {
     }
     // Create credentials object if available
     let credentials = null
-    if (registry !== null && username !== null && password !== null){
+    if (registry !== null && username !== null && password !== null) {
         credentials = new RegistryCredentials(registry, username, password)
     }
     // Check if image exists
