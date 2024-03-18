@@ -43,6 +43,7 @@ async function main() {
     }
     // Check if image exists
     let exists = await service.exists(image, credentials)
+    core.info(`The exists check for the image ${imageName} returned ${exists}`)
     // Return output
     core.setOutput('exists', exists)
 }
