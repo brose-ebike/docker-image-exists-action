@@ -1,0 +1,17 @@
+name: Test
+
+on: [push]
+
+jobs:
+  test_nginx:
+    name: "CI"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: github.com/brose-ebike/docker-image-exists-action@main
+        id: "nginx"
+        name: "Check if nginx exists"
+        with:
+          image: "nginx"
+      - name: "Evalulate result"
+        run: |
+          echo "${{ steps.nginx.outputs.exists }}"
