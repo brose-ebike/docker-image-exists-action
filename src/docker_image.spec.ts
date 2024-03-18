@@ -1,12 +1,11 @@
 import { expect } from 'chai';
-import exp from 'constants';
 import 'mocha';
 import { DockerImage } from './docker_image';
 
-describe('given different image lengths', () => {
+describe('given different image names', () => {
 
   // nginx
-  it('should check for single image name', () =>{
+  it('should parse name without slash', () =>{
     const input = "nginx"
   
     const result = DockerImage.parse(input);
@@ -15,7 +14,7 @@ describe('given different image lengths', () => {
     expect(result.tag).to.equal("latest") 
   })
   // grafana/grafana
-  it('should check for single image name with repository', () => {
+  it('should parse name with one slash', () => {
     const input = "grafana/grafana"
   
     const result = DockerImage.parse(input);
@@ -24,7 +23,7 @@ describe('given different image lengths', () => {
     expect(result.tag).to.equal("latest")    
   });
   // grafana/grafana:v1.19.0
-  it('should check for single image name with repository and version tag', () => {
+  it('should parse name with one slash and tag', () => {
     const input = "grafana/grafana:v1.19.0"
   
     const result = DockerImage.parse(input);
@@ -33,7 +32,7 @@ describe('given different image lengths', () => {
     expect(result.tag).to.equal("v1.19.0")    
   });
   // grafana/grafana:lastest
-  it('should check for repo, image name and latest tag', () => {
+  it('should parse name with one slash and latest tag', () => {
     const input = "grafana/grafana:latest"
   
     const result = DockerImage.parse(input);
@@ -42,7 +41,7 @@ describe('given different image lengths', () => {
     expect(result.tag).to.equal("latest")    
   });
   // quay.io/argoproj/argocd:v2.0.0
-  it('should check for registry, repo, image name and version tag', () => {
+  it('should parse name with two slashes and tag', () => {
     const input = "qua_y.io/argoproj/argocd:v2.0.0"
   
     const result = DockerImage.parse(input);
@@ -52,7 +51,7 @@ describe('given different image lengths', () => {
   });
 
   // qua_y.io/argoproj/argocd:v2.0.0
-  it('should check if registry can contain "_"', () => {
+  it('should parse name with two slashes, a tag and a registry name with underscore', () => {
     const input = "qua_y.io/argoproj/argocd:v2.0.0"
   
     const result = DockerImage.parse(input);
@@ -62,7 +61,7 @@ describe('given different image lengths', () => {
   });
 
   // quay.io/argo/proj/argocd
-  it('should check if long imageName without version tag', () => {
+  it('should parse name with two slashes', () => {
     const input = "quay.io/argoproj/argocd"
   
     const result = DockerImage.parse(input);
