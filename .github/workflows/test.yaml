@@ -8,12 +8,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: brose-ebike/docker-image-exists-action@main
-        id: "nginx"
+        id: "image"
         name: "Check if nginx exists"
         with:
           image: "nginx"
       - name: "Evalulate result"
         run: |
-          if [ "${{ steps.nginx.outputs.exists }}" != "true" ]; then
+          if [ "${{ steps.image.outputs.exists }}" != "true" ]; then
+            echo "Image does not exist!"
             return 1
+          else
+            echo "Image does exists!"
+          fi
+  test_missing:
+    name: "Check missing image does not exist"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: brose-ebike/docker-image-exists-action@main
+        id: "image"
+        name: "Check if missing exists"
+        with:
+          image: "missing"
+      - name: "Evalulate result"
+        run: |
+          if [ "${{ steps.image.outputs.exists }}" != "false" ]; then
+            echo "Image does exist!"
+            return 1
+          else
+            echo "Image does not exists!"
+          fi
+  test_atlantis:
+    name: "Check if latest atlantis image exists"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: brose-ebike/docker-image-exists-action@main
+        id: "image"
+        name: "Check if atlantis exists"
+        with:
+          image: "ghcr.io/runatlantis/atlantis:v0.27.2"
+      - name: "Evalulate result"
+        run: |
+          if [ "${{ steps.image.outputs.exists }}" != "true" ]; then
+            echo "Image does not exist!"
+            return 1
+          else
+            echo "Image does exists!"
           fi
