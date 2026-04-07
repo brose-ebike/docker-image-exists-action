@@ -7,7 +7,7 @@ jobs:
     name: "Check if latest nginx image exists"
     runs-on: ubuntu-latest
     steps:
-      - uses: brose-ebike/docker-image-exists-action@main
+      - uses: brose-ebike/docker-image-exists-action@cbce8e62f697a35567af845e009503de74b69b87
         id: "image"
         name: "Check if nginx exists"
         with:
@@ -24,7 +24,7 @@ jobs:
     name: "Check missing image does not exist"
     runs-on: ubuntu-latest
     steps:
-      - uses: brose-ebike/docker-image-exists-action@main
+      - uses: brose-ebike/docker-image-exists-action@cbce8e62f697a35567af845e009503de74b69b87
         id: "image"
         name: "Check if missing exists"
         with:
@@ -41,7 +41,7 @@ jobs:
     name: "Check if latest atlantis image exists"
     runs-on: ubuntu-latest
     steps:
-      - uses: brose-ebike/docker-image-exists-action@main
+      - uses: brose-ebike/docker-image-exists-action@cbce8e62f697a35567af845e009503de74b69b87
         id: "image"
         name: "Check if atlantis exists"
         with:

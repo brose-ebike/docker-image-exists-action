@@ -7,13 +7,13 @@ jobs:
     name: "Build Release"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.8"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
         with:
           node-version: 20
           cache: 'npm'
@@ -47,12 +47,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - id: content
         name: Create Release Content
-        uses: raynigon/release-documentation@main
+        uses: raynigon/release-documentation@cc6d191c791ae349b003405670841ff9a5866e9b
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           latest: "${{ steps.vars.outputs.tag }}"
       - name: "Github Release"
-        uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564 #v2.0.4
+        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe #v2.0.4
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
